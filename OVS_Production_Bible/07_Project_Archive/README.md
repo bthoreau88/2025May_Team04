@@ -23,4 +23,10 @@ Each project lives in its own folder: `[YYYYMM]_[project_slug]/`
 └── notes.md          ← production notes, decisions, changes
 ```
 
+### Starting a New Project
+
+1. Copy `_TEMPLATE/` into `_ACTIVE/`
+2. Rename the folder to `[YYYYMM_project_slug]` — e.g. `202607_cadillac_noir`
+3. Fill in `brief.md` first, then work through the pipeline
+
 **Move projects between `_ACTIVE/`, `_SHIPPED/`, `_SHELVED/` — never delete.**
