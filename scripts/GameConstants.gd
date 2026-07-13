@@ -18,6 +18,7 @@ const ROUNDS_TO_WIN: int = 2            # best of 3
 const ROUND_TIME_SECONDS: float = 60.0
 const PRE_ROUND_COUNTDOWN: int = 3      # "3, 2, 1, FIGHT!"
 const BETWEEN_ROUNDS_DELAY: float = 2.5 # seconds showing the round result
+const MATCH_END_RETURN_DELAY: float = 3.0 # seconds before returning to select
 
 # --- HANDZ Meter (bible §05) ----------------------------------------------
 # Meter runs 0-100 (%).

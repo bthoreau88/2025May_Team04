@@ -103,6 +103,8 @@ func _on_round_ended(winner_id: int, _wins: Dictionary) -> void:
 
 func _on_match_ended(winner_id: int) -> void:
 	announce_label.text = "%s WINS!" % _fighter_name(winner_id)
+	await get_tree().create_timer(GameConstants.MATCH_END_RETURN_DELAY).timeout
+	get_tree().change_scene_to_file("res://scenes/CharacterSelect.tscn")
 
 
 func _on_time_left_changed(seconds: int) -> void:
