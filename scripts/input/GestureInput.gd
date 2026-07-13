@@ -89,6 +89,10 @@ func _handle_key(event: InputEventKey) -> void:
 			_emit_action("special_b", "keyboard", Vector2.ZERO)
 		KEY_F:
 			_emit_action("parry", "keyboard", Vector2.ZERO)
+		KEY_Q:
+			# Desktop stand-in for touch hold-to-charge (Coat Catch,
+			# Deadpan Charge, Bucket Counter, Scarf Snare...).
+			_emit_action("charge", "keyboard", Vector2.ZERO)
 
 
 # --- Touch recognition ------------------------------------------------------

@@ -9,8 +9,9 @@
 # =============================================================================
 extends Node2D
 
-@onready var player1: CharacterBase = $Player1
-@onready var player2: CharacterBase = $Player2
+var player1: CharacterBase
+var player2: CharacterBase
+
 @onready var input_router: InputRouter = $InputRouter
 @onready var round_manager: RoundManager = $RoundManager
 
@@ -25,6 +26,11 @@ extends Node2D
 
 
 func _ready() -> void:
+	# Fighters come from the select screen via Roster's static picks
+	# (defaults to Sol Tigre vs Yellow Dog when this scene runs standalone).
+	player1 = _spawn_fighter(Roster.pick_p1, 1, $SpawnP1.position)
+	player2 = _spawn_fighter(Roster.pick_p2, 2, $SpawnP2.position)
+
 	# Fighters need to know each other for range checks and face-off.
 	player1.opponent = player2
 	player2.opponent = player1
@@ -54,6 +60,16 @@ func _ready() -> void:
 	round_manager.match_ended.connect(_on_match_ended)
 	round_manager.time_left_changed.connect(_on_time_left_changed)
 	round_manager.start_match()
+
+
+func _spawn_fighter(id: String, pid: int, spawn: Vector2) -> CharacterBase:
+	var fighter: CharacterBase = Roster.load_fighter_scene(id).instantiate()
+	fighter.player_id = pid
+	# Position BEFORE add_child: the fighter records its spawn point for
+	# round resets inside its own _ready().
+	fighter.position = spawn
+	add_child(fighter)
+	return fighter
 
 
 func _on_health_changed(current: float, max_value: float, bar: ProgressBar) -> void:

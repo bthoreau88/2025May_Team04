@@ -63,10 +63,17 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - **Milestone test:** both fighters fully animated (idle, walk, all attacks,
   block, parry, hit, KO) at stable 60fps on a mid-range phone.
 
-## Phase 5 — Remaining 6 fighters, gray-box first (weeks 20–24)
+## Phase 5 — Remaining 6 fighters, gray-box first (weeks 20–24) — GRAY-BOX DONE EARLY
 
-- [ ] Crown Saint, The Architect, Dotty, Fresh, Cyborg Stitch, Purple Thread
-      — kits per bible §04, each gray-boxed then animated
+- [x] Gray-box kits for Crown Saint (Crown Sign burst), The Architect
+      (Cipher Orb / Coat Catch negate / Phase Step), Dotty (Dot Trap mines /
+      Runway Rush / Scarf Snare), Fresh (command grab / Bucket Counter,
+      NO projectiles), Cyborg Stitch (Circuit Slam / Chain Break),
+      Purple Thread (Yarn Lash / Knot Trap / Thread Spin)
+- [x] Character select screen (touch-first, roster generated from Roster.gd)
+- [ ] Check every kit against bible §04 exact move descriptions and adjust
+- [ ] Coat Catch: true projectile REFLECT (currently just negates)
+- [ ] Per-fighter animation once Phase 4 pipeline exists
 - **Milestone test:** full 8-fighter select, any matchup completes a match.
 
 ## Phase 6 — Alpha polish (weeks 25–26)

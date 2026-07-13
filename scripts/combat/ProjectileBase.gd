@@ -25,6 +25,7 @@ var hitstun: int = 12
 var move_velocity: Vector2 = Vector2.ZERO
 var gravity_scale: float = 0.0
 var _life_left: float = 3.0
+var _arm_left: float = 0.0    # traps: seconds until the hit area goes live
 var _hit_shape: RectangleShape2D
 
 
@@ -47,6 +48,7 @@ func configure(from: CharacterBase, dir: int, data: Dictionary, damage_override:
 	move_velocity = Vector2(dir * data["speed_x"], data["speed_y"])
 	gravity_scale = data["gravity_scale"]
 	_life_left = data["lifetime"]
+	_arm_left = data.get("arm_delay", 0.0)
 	_hit_shape.size = data["size"]
 
 
@@ -59,6 +61,9 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 		return
 
+	if _arm_left > 0.0:
+		_arm_left -= delta
+		return
 	_check_hit()
 
 

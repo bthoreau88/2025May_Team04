@@ -8,8 +8,6 @@ extends CharacterBase
 
 const TIGER_SCENE := preload("res://scenes/projectiles/TigerCompanion.tscn")
 
-var _tiger_ready_ms: int = 0
-
 
 func _init() -> void:
 	display_name = "SOL TIGRE"
@@ -18,10 +16,8 @@ func _init() -> void:
 
 # Special A: the tiger dashes across the stage from behind Sol Tigre.
 func special_a() -> void:
-	var now := Time.get_ticks_msec()
-	if now < _tiger_ready_ms:
-		return # companion still on cooldown
-	_tiger_ready_ms = now + int(tuning["tiger_cooldown_seconds"] * 1000.0)
+	if not cooldown_ready("tiger", tuning["tiger_cooldown_seconds"]):
+		return
 	start_cast(GameConstants.SPECIAL_CAST_RECOVERY_FRAMES)
 
 	var tiger: TigerCompanion = TIGER_SCENE.instantiate()

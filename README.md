@@ -25,14 +25,14 @@ Every change in this repo is checked against these. No exceptions.
 ```
 project.godot                      Godot 4 project (autoloads: GameConstants, GestureInput)
 scenes/
-  FightScene.tscn                  Gray-box fight: 2 placeholder fighters + UI
+  CharacterSelect.tscn/.gd         Touch-first select screen (main scene)
+  FightScene.tscn                  Gray-box fight: spawns picked fighters + UI
   FightScene.gd                    Scene glue: wires input, bars, round flow
-  projectiles/
-    BrickProjectile.tscn           Yellow Dog's arcing brick
-    TigerCompanion.tscn            Sol Tigre's dashing assist
-    ChainProjectile.tscn           Groundwork for Cyborg Stitch (unused yet)
+  fighters/                        One scene per roster fighter (placeholder colors)
+  projectiles/                     Brick, Tiger, Chain, Cipher Orb, Dot/Knot traps
 scripts/
   GameConstants.gd                 ALL tunable numbers (bible §05-§06)   [autoload]
+  Roster.gd                        LOCKED Game 1 roster + select-screen picks
   input/
     GestureInput.gd                Tap/swipe/2-finger recognizer + keyboard [autoload]
   managers/
@@ -41,20 +41,25 @@ scripts/
   combat/
     HandzMeter.gd                  25% EX / 50% BREAK / 100% Super, 50% round carry
     ParrySystem.gd                 6-frame window, +15% meter / 12f advantage on success
-    ProjectileBase.gd              Shared projectile logic (brick/tiger/chain)
-    BrickProjectile.gd             Brick Toss behavior
-    TigerCompanion.gd              Tiger assist behavior
-    ChainProjectile.gd             Chain Break groundwork
+    ProjectileBase.gd              Shared projectile/trap logic (arm delay, lifetime)
+    BrickProjectile.gd / TigerCompanion.gd / ChainProjectile.gd
+    CipherOrb.gd / DotTrap.gd / KnotTrap.gd
   characters/
     CharacterBase.gd               Health, FightState machine, damage, meter/parry
-    SolTigre.gd                    G1-01 rushdown (tiger companion stubbed)
-    YellowDog.gd                   G1-08 wild card (brick damage FLAGGED OP)
+    SolTigre.gd                    G1-01 Rushdown + Tiger Companion
+    CrownSaint.gd                  G1-02 Brawler, Crown Sign burst
+    TheArchitect.gd                G1-03 Zoner: Cipher Orb, Coat Catch, Phase Step
+    Dotty.gd                       G1-04 Setplay: Dot Trap, Runway Rush, Scarf Snare
+    Fresh.gd                       G1-05 Grappler: command grab, Bucket Counter
+    CyborgStitch.gd                G1-06 Power: Circuit Slam, Chain Break
+    PurpleThread.gd                G1-07 Whip zoner: Yarn Lash, Knot Trap, Thread Spin
+    YellowDog.gd                   G1-08 Wild card (brick damage FLAGGED OP)
 ```
 
 ## Desktop test controls (Player 1)
 
 `Z` light · `X` medium · `C` heavy · `V` super · `A` Special A · `S` Special B ·
-`D` hold to block · `F` parry · `←`/`→` walk (testing only)
+`D` hold to block · `F` parry · `Q` charge move · `←`/`→` walk (testing only)
 
 Mouse emulates touch: click/drag on the **right half** of the window to drive
 Player 2 with real gestures (tap, swipe, etc.).

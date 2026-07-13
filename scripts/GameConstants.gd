@@ -55,6 +55,8 @@ const BLOCKSTUN_FRAMES: int = 8
 # hitbox_size : hitbox rectangle, placed in front of the fighter
 #               (reach = half hurtbox width 30 + hitbox_size.x)
 # hitbox_y    : vertical center of the hitbox (0 = chest, + = low, - = high)
+# centered    : true = hitbox centered ON the fighter (radial bursts)
+# unblockable : true = ignores block (grabs). Parry still beats it.
 const ATTACKS: Dictionary = {
 	"light": {
 		"damage": 40.0, "startup": 4, "active": 3, "recovery": 8, "hitstun": 10,
@@ -79,6 +81,42 @@ const ATTACKS: Dictionary = {
 	"super": {
 		"damage": 250.0, "startup": 14, "active": 8, "recovery": 30, "hitstun": 40,
 		"hitbox_size": Vector2(190, 140), "hitbox_y": 0.0,
+	},
+	# --- Character signature attacks (bible §04, gray-box numbers) ---
+	# CROWN SAINT: faith-power burst radiating from his body.
+	"crown_burst": {
+		"damage": 95.0, "startup": 10, "active": 4, "recovery": 20, "hitstun": 18,
+		"hitbox_size": Vector2(220, 160), "hitbox_y": 0.0, "centered": true,
+	},
+	# FRESH: command grab — short reach, big reward, ignores block.
+	"fresh_grab": {
+		"damage": 130.0, "startup": 9, "active": 2, "recovery": 22, "hitstun": 26,
+		"hitbox_size": Vector2(70, 100), "hitbox_y": 0.0, "unblockable": true,
+	},
+	# CYBORG STITCH: Circuit Slam — slow, huge overhead.
+	"circuit_slam": {
+		"damage": 130.0, "startup": 14, "active": 4, "recovery": 24, "hitstun": 24,
+		"hitbox_size": Vector2(150, 110), "hitbox_y": -20.0,
+	},
+	# PURPLE THREAD: Yarn Lash — long thin whip poke.
+	"yarn_lash": {
+		"damage": 60.0, "startup": 9, "active": 3, "recovery": 16, "hitstun": 12,
+		"hitbox_size": Vector2(230, 40), "hitbox_y": 0.0,
+	},
+	# PURPLE THREAD: Thread Spin — whip whirl around her body.
+	"thread_spin": {
+		"damage": 70.0, "startup": 8, "active": 6, "recovery": 16, "hitstun": 14,
+		"hitbox_size": Vector2(240, 120), "hitbox_y": 0.0, "centered": true,
+	},
+	# DOTTY: Runway Rush — strikes while dashing in.
+	"runway_rush": {
+		"damage": 75.0, "startup": 6, "active": 5, "recovery": 14, "hitstun": 16,
+		"hitbox_size": Vector2(130, 90), "hitbox_y": 0.0,
+	},
+	# DOTTY: Scarf Snare — low damage, long freeze to set up traps.
+	"scarf_snare": {
+		"damage": 45.0, "startup": 11, "active": 3, "recovery": 18, "hitstun": 30,
+		"hitbox_size": Vector2(200, 50), "hitbox_y": 0.0,
 	},
 }
 
@@ -133,9 +171,25 @@ const PROJECTILES: Dictionary = {
 		"hitstun": 18, "lifetime": 1.6, "size": Vector2(90, 60),
 	},
 	"chain": {
-		# Groundwork for Cyborg Stitch's Chain Break — no fighter fires it yet.
+		# Cyborg Stitch's Chain Break.
 		"damage": 60.0, "speed_x": 800.0, "speed_y": 0.0, "gravity_scale": 0.0,
 		"hitstun": 14, "lifetime": 1.2, "size": Vector2(70, 20),
+	},
+	"cipher_orb": {
+		# THE ARCHITECT: slow-moving zoning orb.
+		"damage": 55.0, "speed_x": 300.0, "speed_y": 0.0, "gravity_scale": 0.0,
+		"hitstun": 16, "lifetime": 4.0, "size": Vector2(50, 50),
+	},
+	# Traps sit still, arm after arm_delay seconds, then hit whoever steps in.
+	"dot_trap": {
+		# DOTTY's mine.
+		"damage": 70.0, "speed_x": 0.0, "speed_y": 0.0, "gravity_scale": 0.0,
+		"hitstun": 24, "lifetime": 8.0, "size": Vector2(70, 40), "arm_delay": 0.5,
+	},
+	"knot_trap": {
+		# PURPLE THREAD's snare: low damage, long freeze.
+		"damage": 40.0, "speed_x": 0.0, "speed_y": 0.0, "gravity_scale": 0.0,
+		"hitstun": 34, "lifetime": 8.0, "size": Vector2(70, 40), "arm_delay": 0.5,
 	},
 }
 
@@ -146,6 +200,55 @@ const SOL_TIGRE: Dictionary = {
 	"damage_multiplier": 0.95,
 	"tiger_cooldown_seconds": 6.0, # companion assist cooldown
 	"tiger_damage": 80.0,
+}
+
+# G1-02 CROWN SAINT — Brawler, Faith Power. Sturdy all-rounder.
+const CROWN_SAINT: Dictionary = {
+	"walk_speed": 320.0,
+	"damage_multiplier": 1.05,
+	"burst_cooldown_seconds": 2.5,
+}
+
+# G1-03 THE ARCHITECT — Zoner, Soul Cipher. Controls space, weak up close.
+const THE_ARCHITECT: Dictionary = {
+	"walk_speed": 300.0,
+	"damage_multiplier": 0.95,
+	"orb_cooldown_seconds": 2.0,
+	"phase_step_distance": 240.0,
+	"phase_step_cooldown_seconds": 3.0,
+	"coat_window_frames": 20,       # Coat Catch projectile-negate window
+	"coat_cooldown_seconds": 2.5,
+}
+
+# G1-04 DOTTY — Setplay Trickster. Fast, light damage, owns the floor.
+const DOTTY: Dictionary = {
+	"walk_speed": 330.0,
+	"damage_multiplier": 0.9,
+	"trap_cooldown_seconds": 2.5,
+}
+
+# G1-05 FRESH — Pure Grappler. NO projectiles, ever (bible §04).
+const FRESH: Dictionary = {
+	"walk_speed": 290.0,
+	"damage_multiplier": 1.1,
+	"counter_window_frames": 22,    # Bucket Counter auto-reversal window
+	"counter_damage": 100.0,
+	"counter_stun_frames": 24,
+	"counter_cooldown_seconds": 3.0,
+}
+
+# G1-06 CYBORG STITCH — Power Striker. Slowest walk, biggest single hits.
+const CYBORG_STITCH: Dictionary = {
+	"walk_speed": 260.0,
+	"damage_multiplier": 1.15,
+	"chain_cooldown_seconds": 2.0,
+}
+
+# G1-07 PURPLE THREAD — Whip Zoner. Long pokes, light damage.
+const PURPLE_THREAD: Dictionary = {
+	"walk_speed": 300.0,
+	"damage_multiplier": 0.95,
+	"trap_cooldown_seconds": 3.0,
 }
 
 # G1-08 YELLOW DOG — Wild Card object fighter. Slower, hits hard.

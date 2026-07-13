@@ -1,13 +1,8 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/FightScene.gd" id="1_scene"]
-[ext_resource type="Script" path="res://scripts/characters/SolTigre.gd" id="2_soltigre"]
-[ext_resource type="Script" path="res://scripts/characters/YellowDog.gd" id="3_yellowdog"]
 [ext_resource type="Script" path="res://scripts/managers/InputRouter.gd" id="4_router"]
 [ext_resource type="Script" path="res://scripts/managers/RoundManager.gd" id="5_rounds"]
-
-[sub_resource type="RectangleShape2D" id="fighter_shape"]
-size = Vector2(60, 180)
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1280, 60)
@@ -38,35 +33,11 @@ offset_right = 640.0
 offset_bottom = 30.0
 color = Color(0.25, 0.23, 0.3, 1)
 
-[node name="Player1" type="CharacterBody2D" parent="."]
+[node name="SpawnP1" type="Marker2D" parent="."]
 position = Vector2(420, 560)
-script = ExtResource("2_soltigre")
-player_id = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player1"]
-shape = SubResource("fighter_shape")
-
-[node name="Placeholder" type="ColorRect" parent="Player1"]
-offset_left = -30.0
-offset_top = -90.0
-offset_right = 30.0
-offset_bottom = 90.0
-color = Color(1, 0.45, 0.1, 1)
-
-[node name="Player2" type="CharacterBody2D" parent="."]
+[node name="SpawnP2" type="Marker2D" parent="."]
 position = Vector2(860, 560)
-script = ExtResource("3_yellowdog")
-player_id = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player2"]
-shape = SubResource("fighter_shape")
-
-[node name="Placeholder" type="ColorRect" parent="Player2"]
-offset_left = -30.0
-offset_top = -90.0
-offset_right = 30.0
-offset_bottom = 90.0
-color = Color(0.95, 0.85, 0.15, 1)
 
 [node name="InputRouter" type="Node" parent="."]
 script = ExtResource("4_router")

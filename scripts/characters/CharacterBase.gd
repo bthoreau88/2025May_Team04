@@ -59,6 +59,7 @@ var _block_held: bool = false       # keyboard D held down
 var _walk_input: int = 0            # -1 / 0 / 1 from walk gestures
 var _pushback: float = 0.0          # decaying knockback velocity (px/s)
 var _dash_frames: int = 0
+var _cooldowns: Dictionary = {}     # special name -> ready-again msec
 
 
 func _ready() -> void:
@@ -256,6 +257,16 @@ func start_attack(attack_name: String) -> void:
 		velocity.y = GameConstants.JUMP_VELOCITY
 
 
+# Shared cooldown gate for specials. Returns true AND starts the cooldown
+# if the special named `key` is ready; returns false while still cooling.
+func cooldown_ready(key: String, seconds: float) -> bool:
+	var now := Time.get_ticks_msec()
+	if now < int(_cooldowns.get(key, 0)):
+		return false
+	_cooldowns[key] = now + int(seconds * 1000.0)
+	return true
+
+
 # Specials that spawn something (brick, tiger) still need commitment: this
 # locks the fighter in a recovery-only "cast" for a few frames, using the
 # ATTACKING state with no hitbox.
@@ -274,13 +285,15 @@ func try_super() -> void:
 		start_attack("super")
 
 
-# Startup just ended: switch the hitbox on in front of us.
+# Startup just ended: switch the hitbox on in front of us (or centered on
+# us for radial bursts like Crown Sign / Thread Spin).
 func _begin_active_frames() -> void:
 	var data: Dictionary = GameConstants.ATTACKS[_attack_name]
 	_hitbox_shape.size = data["hitbox_size"]
-	_hitbox.position = Vector2(
-			facing * (GameConstants.HURTBOX_SIZE.x * 0.5 + data["hitbox_size"].x * 0.5),
-			data["hitbox_y"])
+	var offset_x := 0.0
+	if not data.get("centered", false):
+		offset_x = facing * (GameConstants.HURTBOX_SIZE.x * 0.5 + data["hitbox_size"].x * 0.5)
+	_hitbox.position = Vector2(offset_x, data["hitbox_y"])
 	_hitbox.monitoring = true
 	_attack_phase = "active"
 	_state_frames = data["active"]
@@ -300,7 +313,8 @@ func _tick_active_hit() -> void:
 			var damage: float = data["damage"] * tuning.get("damage_multiplier", 1.0)
 			if desperation:
 				damage *= 1.0 + GameConstants.DESPERATION_DAMAGE_BONUS
-			var landed: bool = opponent.take_hit(damage, self, data["hitstun"])
+			var landed: bool = opponent.take_hit(
+					damage, self, data["hitstun"], data.get("unblockable", false))
 			if landed:
 				meter.on_hit_landed()
 			return
@@ -319,7 +333,9 @@ func _end_attack() -> void:
 
 
 # Returns true if the hit really connected (false if parried or blocked).
-func take_hit(damage: float, attacker: CharacterBase, hitstun: int) -> bool:
+# unblockable hits (grabs) go through block, but a parry still beats them.
+func take_hit(damage: float, attacker: CharacterBase, hitstun: int,
+		unblockable: bool = false) -> bool:
 	if state == FightState.KO:
 		return false
 
@@ -337,7 +353,7 @@ func take_hit(damage: float, attacker: CharacterBase, hitstun: int) -> bool:
 		parry_succeeded.emit(player_id)
 		return false
 
-	if state == FightState.BLOCKING:
+	if state == FightState.BLOCKING and not unblockable:
 		_apply_damage(damage * GameConstants.BLOCK_CHIP_MULTIPLIER)
 		_pushback = push_dir * GameConstants.PUSHBACK_BLOCK_SPEED
 		# Blocking holds; just add a touch of blockstun by extending the state.
