@@ -46,7 +46,7 @@ scripts/
 ## Desktop test controls (Player 1)
 
 `Z` light · `X` medium · `C` heavy · `V` super · `A` Special A · `S` Special B ·
-`D` hold to block · `F` parry
+`D` hold to block · `F` parry · `←`/`→` walk (testing only)
 
 Mouse emulates touch: click/drag on the **right half** of the window to drive
 Player 2 with real gestures (tap, swipe, etc.).

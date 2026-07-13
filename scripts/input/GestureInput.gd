@@ -12,8 +12,9 @@
 #     "type":     "tap" | "swipe" | "action",
 #     "dir":      "left"|"right"|"up"|"down"   (only when type == "swipe"),
 #     "action":   "light"|"medium"|"heavy"|"super"|"special_a"|"special_b"|
-#                 "block_start"|"block_end"|"block_tap"|"parry"|"charge"
-#                 (only when type == "action")
+#                 "block_start"|"block_end"|"block_tap"|"parry"|"charge"|
+#                 "walk_left_start"|"walk_left_end"|"walk_right_start"|
+#                 "walk_right_end"   (only when type == "action")
 #   }
 #
 # Touch mapping (bible §05 — NO quarter-circles):
@@ -56,10 +57,19 @@ func _handle_key(event: InputEventKey) -> void:
 	if event.echo:
 		return
 
-	# Block is the one held key: D down = start blocking, D up = stop.
-	if event.keycode == KEY_D:
-		_emit_action("block_start" if event.pressed else "block_end", "keyboard", Vector2.ZERO)
-		return
+	# Held keys emit a _start on press and an _end on release.
+	# D = block; arrow keys = walk (desktop testing only — touch movement
+	# comes with the Phase 2 mobile pass).
+	match event.keycode:
+		KEY_D:
+			_emit_action("block_start" if event.pressed else "block_end", "keyboard", Vector2.ZERO)
+			return
+		KEY_LEFT:
+			_emit_action("walk_left_start" if event.pressed else "walk_left_end", "keyboard", Vector2.ZERO)
+			return
+		KEY_RIGHT:
+			_emit_action("walk_right_start" if event.pressed else "walk_right_end", "keyboard", Vector2.ZERO)
+			return
 
 	if not event.pressed:
 		return

@@ -26,12 +26,16 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - **Milestone test:** play a full best-of-3 on desktop keyboard AND on a phone,
   KO and time-out both end rounds, meter carries 50% between rounds.
 
-## Phase 2 — Real hit detection (weeks 7–9)
+## Phase 2 — Real hit detection (weeks 7–9) — IN PROGRESS
 
-- [ ] Hitbox/hurtbox Area2D pairs with per-attack frame timing
-      (replace the distance check in `CharacterBase._opponent_in_range`)
-- [ ] Walk/dash movement + pushback on hit and block
-- [ ] Debug overlay: show active hitboxes as colored rects
+- [x] Hitbox/hurtbox Area2D pairs with per-attack frame timing
+      (startup → active → recovery; the old distance check is gone)
+- [~] Walk/dash movement + pushback on hit and block
+      (walk: keyboard arrows for desktop testing; touch walk still TODO.
+       dash: forward swipe when out of range. pushback: done, incl. block)
+- [x] Debug overlay: green hurtboxes + red active hitboxes
+      (toggle: `DEBUG_SHOW_HITBOXES` in GameConstants.gd)
+- [ ] Touch movement design pass on a real phone (how should walking feel?)
 - **Milestone test:** whiffing at max range visibly misses; hits connect only
   during active frames.
 

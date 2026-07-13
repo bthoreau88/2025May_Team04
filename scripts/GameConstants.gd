@@ -47,25 +47,64 @@ const BLOCK_TAP_DURATION_FRAMES: int = 20      # 2-finger tap blocks for this lo
 const BLOCKSTUN_FRAMES: int = 8
 
 # --- Universal attack data --------------------------------------------------
-# damage    : raw damage against MAX_HEALTH 1000
-# startup   : frames before the hit connects
-# recovery  : frames after the hit before you can act again
-# range     : max horizontal distance (px at 1x) for the hit to land
-# hitstun   : frames the victim is frozen on a clean hit
+# damage      : raw damage against MAX_HEALTH 1000
+# startup     : frames before the hitbox turns on
+# active      : frames the hitbox stays on (the hit can only land here)
+# recovery    : frames after the hitbox turns off before you can act again
+# hitstun     : frames the victim is frozen on a clean hit
+# hitbox_size : hitbox rectangle, placed in front of the fighter
+#               (reach = half hurtbox width 30 + hitbox_size.x)
+# hitbox_y    : vertical center of the hitbox (0 = chest, + = low, - = high)
 const ATTACKS: Dictionary = {
-	"light":       {"damage": 40.0,  "startup": 4,  "recovery": 8,  "range": 150.0, "hitstun": 10},
-	"medium":      {"damage": 70.0,  "startup": 7,  "recovery": 12, "range": 170.0, "hitstun": 14},
-	"heavy":       {"damage": 110.0, "startup": 11, "recovery": 18, "range": 190.0, "hitstun": 20},
-	"low":         {"damage": 55.0,  "startup": 6,  "recovery": 12, "range": 150.0, "hitstun": 12},
-	"jump_attack": {"damage": 65.0,  "startup": 8,  "recovery": 14, "range": 170.0, "hitstun": 14},
-	"super":       {"damage": 250.0, "startup": 14, "recovery": 30, "range": 220.0, "hitstun": 40},
+	"light": {
+		"damage": 40.0, "startup": 4, "active": 3, "recovery": 8, "hitstun": 10,
+		"hitbox_size": Vector2(120, 80), "hitbox_y": 0.0,
+	},
+	"medium": {
+		"damage": 70.0, "startup": 7, "active": 4, "recovery": 12, "hitstun": 14,
+		"hitbox_size": Vector2(140, 90), "hitbox_y": 0.0,
+	},
+	"heavy": {
+		"damage": 110.0, "startup": 11, "active": 5, "recovery": 18, "hitstun": 20,
+		"hitbox_size": Vector2(160, 100), "hitbox_y": 0.0,
+	},
+	"low": {
+		"damage": 55.0, "startup": 6, "active": 3, "recovery": 12, "hitstun": 12,
+		"hitbox_size": Vector2(120, 60), "hitbox_y": 55.0,
+	},
+	"jump_attack": {
+		"damage": 65.0, "startup": 8, "active": 6, "recovery": 14, "hitstun": 14,
+		"hitbox_size": Vector2(140, 90), "hitbox_y": -40.0,
+	},
+	"super": {
+		"damage": 250.0, "startup": 14, "active": 8, "recovery": 30, "hitstun": 40,
+		"hitbox_size": Vector2(190, 140), "hitbox_y": 0.0,
+	},
 }
+
+# --- Bodies & hit detection --------------------------------------------------
+const HURTBOX_SIZE: Vector2 = Vector2(60, 180)  # matches the placeholder body
+# Draws hurtboxes (green) and active hitboxes (red) in-game. Turn off for
+# demos; costs nothing when false.
+const DEBUG_SHOW_HITBOXES: bool = true
 
 # --- Movement (gray-box defaults; per-character overrides below) ------------
 const WALK_SPEED: float = 300.0
 const DASH_SPEED: float = 650.0
+const DASH_DURATION_FRAMES: int = 10
+# Forward swipe means dash when the opponent is farther than this, otherwise
+# it is the medium attack (bible §05: "swipe -> = medium/dash").
+const DASH_TRIGGER_DISTANCE: float = 260.0
 const JUMP_VELOCITY: float = -700.0
 const GRAVITY: float = 2000.0
+const STAGE_EDGE_MARGIN: float = 40.0           # fighters can't leave the screen
+
+# --- Pushback (Phase 2) -------------------------------------------------------
+# Initial backward velocity (px/s) given to the victim, decaying at
+# PUSHBACK_DECAY px/s^2. Blocked hits shove harder but deal only chip.
+const PUSHBACK_HIT_SPEED: float = 320.0
+const PUSHBACK_BLOCK_SPEED: float = 480.0
+const PUSHBACK_DECAY: float = 1800.0
 
 # --- Gesture recognition (GestureInput.gd) ---------------------------------
 const TAP_MAX_DURATION_MS: int = 220        # press shorter than this = tap
