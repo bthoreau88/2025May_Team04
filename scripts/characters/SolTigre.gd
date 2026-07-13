@@ -2,12 +2,13 @@
 # SolTigre.gd — G1-01 SOL TIGRE. Rushdown + Tiger Companion. Miami, FL.
 # Fighting style: Tigre Flujo. Fast walk speed, slightly reduced damage
 # (tuning in GameConstants.SOL_TIGRE — Project Rule 1).
-#
-# The tiger companion is STUBBED until the hitbox/hurtbox milestone; it will
-# become TigerCompanion.tscn (see ROADMAP.md).
 # =============================================================================
 class_name SolTigre
 extends CharacterBase
+
+const TIGER_SCENE := preload("res://scenes/projectiles/TigerCompanion.tscn")
+
+var _tiger_ready_ms: int = 0
 
 
 func _init() -> void:
@@ -15,11 +16,18 @@ func _init() -> void:
 	tuning = GameConstants.SOL_TIGRE
 
 
-# Special A: tiger companion assist.
+# Special A: the tiger dashes across the stage from behind Sol Tigre.
 func special_a() -> void:
-	# TODO(roadmap: projectiles milestone): spawn TigerCompanion.tscn, dash
-	# across at tuning["tiger_cooldown_seconds"] cooldown. Gray-box stub:
-	print("[SOL TIGRE] Tiger companion (stub) — TigerCompanion.tscn not built yet")
+	var now := Time.get_ticks_msec()
+	if now < _tiger_ready_ms:
+		return # companion still on cooldown
+	_tiger_ready_ms = now + int(tuning["tiger_cooldown_seconds"] * 1000.0)
+	start_cast(GameConstants.SPECIAL_CAST_RECOVERY_FRAMES)
+
+	var tiger: TigerCompanion = TIGER_SCENE.instantiate()
+	get_parent().add_child(tiger)
+	tiger.global_position = global_position + Vector2(-facing * 90.0, 20.0)
+	tiger.launch(self, facing)
 
 
 # Special B: Tigre Flujo rush — placeholder as a fast medium until real

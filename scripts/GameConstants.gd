@@ -113,12 +113,39 @@ const SWIPE_MIN_DISTANCE_PX: float = 60.0   # travel needed to count as a swipe
 const HOLD_MIN_DURATION_MS: int = 450       # press longer than this = charge
 const SPECIAL_SEQUENCE_WINDOW_MS: int = 400 # max gap between the two swipes of ←→ / ↓→
 
+# --- Specials & projectiles ---------------------------------------------------
+# Spawning a projectile still commits the fighter for a few frames.
+const SPECIAL_CAST_RECOVERY_FRAMES: int = 18
+
+# speed / speed_x+speed_y : px/s at spawn (x is multiplied by facing)
+# gravity_scale           : 0 = flies straight, 1 = full arc
+# hitstun                 : frames on hit
+# lifetime                : seconds before despawn
+# size                    : hit area
+const PROJECTILES: Dictionary = {
+	"brick": {
+		# damage comes from YELLOW_DOG["brick_damage"] (FLAGGED OP there)
+		"speed_x": 500.0, "speed_y": -450.0, "gravity_scale": 1.0,
+		"hitstun": 16, "lifetime": 3.0, "size": Vector2(40, 30),
+	},
+	"tiger": {
+		"speed_x": 700.0, "speed_y": 0.0, "gravity_scale": 0.0,
+		"hitstun": 18, "lifetime": 1.6, "size": Vector2(90, 60),
+	},
+	"chain": {
+		# Groundwork for Cyborg Stitch's Chain Break — no fighter fires it yet.
+		"damage": 60.0, "speed_x": 800.0, "speed_y": 0.0, "gravity_scale": 0.0,
+		"hitstun": 14, "lifetime": 1.2, "size": Vector2(70, 20),
+	},
+}
+
 # --- Per-character tuning ---------------------------------------------------
 # G1-01 SOL TIGRE — Rushdown + Tiger Companion. Fast, slightly light damage.
 const SOL_TIGRE: Dictionary = {
 	"walk_speed": 360.0,
 	"damage_multiplier": 0.95,
-	"tiger_cooldown_seconds": 6.0, # companion assist cooldown (companion stubbed)
+	"tiger_cooldown_seconds": 6.0, # companion assist cooldown
+	"tiger_damage": 80.0,
 }
 
 # G1-08 YELLOW DOG — Wild Card object fighter. Slower, hits hard.
@@ -129,7 +156,9 @@ const YELLOW_DOG: Dictionary = {
 	# bible says to tune it. Left at the flagged value so the problem is
 	# visible in playtests; reduce it here (nowhere else) when tuning.
 	"brick_damage": 90.0,
+	"brick_cooldown_seconds": 1.5,
 	"smoke_cloud_duration_seconds": 3.0,
+	"smoke_cloud_cooldown_seconds": 5.0,
 }
 
 # --- Art / sprite spec (bible §06) — used by tooling & import checks --------

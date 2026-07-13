@@ -44,6 +44,9 @@ func start_match() -> void:
 
 func _start_round() -> void:
 	_round_number += 1
+	# Bricks, tigers and smoke from the last round don't carry over.
+	for projectile in get_tree().get_nodes_in_group("projectiles"):
+		projectile.queue_free()
 	_player1.reset_for_round()
 	_player2.reset_for_round()
 	_time_left = GameConstants.ROUND_TIME_SECONDS

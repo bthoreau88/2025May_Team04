@@ -39,12 +39,18 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - **Milestone test:** whiffing at max range visibly misses; hits connect only
   during active frames.
 
-## Phase 3 — First two real fighters (weeks 10–14)
+## Phase 3 — First two real fighters (weeks 10–14) — IN PROGRESS
 
-- [ ] SOL TIGRE full kit — `TigerCompanion.tscn` (assist entity, cooldown)
-- [ ] YELLOW DOG full kit — `BrickProjectile.tscn`, Smoke Cloud, Deadpan Charge
-      (tune the flagged brick damage in GameConstants!)
-- [ ] `ChainProjectile.tscn` groundwork (shared projectile base for later cast)
+- [x] Shared `ProjectileBase.gd` (velocity/gravity/lifetime/hit-once,
+      cleared between rounds via the "projectiles" group)
+- [x] SOL TIGRE — `TigerCompanion.tscn` assist: dashes across on Special A,
+      6s cooldown, hits once
+- [x] YELLOW DOG — `BrickProjectile.tscn` arcing Brick Toss (damage still
+      FLAGGED OP in GameConstants — tune after playtest!), Smoke Cloud
+      (fade + cloud, 3s), Deadpan Charge (hold = heavy, armor TODO)
+- [x] `ChainProjectile.tscn` groundwork (no fighter fires it yet)
+- [ ] Playtest the matchup and tune brick damage / tiger cooldown
+- [ ] Real per-character frame data (both still share universal ATTACKS)
 - **Milestone test:** mirror-less match Sol Tigre vs Yellow Dog with all
   specials functional, still placeholder art.
 

@@ -27,6 +27,10 @@ project.godot                      Godot 4 project (autoloads: GameConstants, Ge
 scenes/
   FightScene.tscn                  Gray-box fight: 2 placeholder fighters + UI
   FightScene.gd                    Scene glue: wires input, bars, round flow
+  projectiles/
+    BrickProjectile.tscn           Yellow Dog's arcing brick
+    TigerCompanion.tscn            Sol Tigre's dashing assist
+    ChainProjectile.tscn           Groundwork for Cyborg Stitch (unused yet)
 scripts/
   GameConstants.gd                 ALL tunable numbers (bible §05-§06)   [autoload]
   input/
@@ -37,6 +41,10 @@ scripts/
   combat/
     HandzMeter.gd                  25% EX / 50% BREAK / 100% Super, 50% round carry
     ParrySystem.gd                 6-frame window, +15% meter / 12f advantage on success
+    ProjectileBase.gd              Shared projectile logic (brick/tiger/chain)
+    BrickProjectile.gd             Brick Toss behavior
+    TigerCompanion.gd              Tiger assist behavior
+    ChainProjectile.gd             Chain Break groundwork
   characters/
     CharacterBase.gd               Health, FightState machine, damage, meter/parry
     SolTigre.gd                    G1-01 rushdown (tiger companion stubbed)

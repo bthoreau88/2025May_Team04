@@ -256,6 +256,16 @@ func start_attack(attack_name: String) -> void:
 		velocity.y = GameConstants.JUMP_VELOCITY
 
 
+# Specials that spawn something (brick, tiger) still need commitment: this
+# locks the fighter in a recovery-only "cast" for a few frames, using the
+# ATTACKING state with no hitbox.
+func start_cast(frames: int) -> void:
+	state = FightState.ATTACKING
+	_attack_name = ""
+	_attack_phase = "recovery"
+	_state_frames = frames
+
+
 func try_super() -> void:
 	# Desperation Mode discount: super at 50% meter (bible §05).
 	var cost: float = GameConstants.DESPERATION_SUPER_COST if desperation \
@@ -319,7 +329,10 @@ func take_hit(damage: float, attacker: CharacterBase, hitstun: int) -> bool:
 	if state == FightState.PARRYING and parry.is_active():
 		parry.succeed()
 		meter.on_parry_success()
-		attacker.apply_parry_stun()
+		# Melee: the parried attacker eats the advantage stun. Projectiles:
+		# the hit is negated but the (distant, idle) owner is not stunned.
+		if attacker.state == FightState.ATTACKING:
+			attacker.apply_parry_stun()
 		state = FightState.IDLE
 		parry_succeeded.emit(player_id)
 		return false
@@ -458,6 +471,7 @@ func reset_for_round() -> void:
 	_pushback = 0.0
 	_dash_frames = 0
 	parry.cancel()
+	modulate.a = 1.0   # undo smoke-cloud style fades
 	global_position = spawn_position
 	velocity = Vector2.ZERO
 	meter.carry_over()

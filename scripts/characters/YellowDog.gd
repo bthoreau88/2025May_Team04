@@ -5,12 +5,14 @@
 #
 # !!! BALANCE: brick damage is flagged OVERPOWERED in the bible (§04). The
 # number lives in GameConstants.YELLOW_DOG["brick_damage"] — tune it there.
-#
-# Projectiles are STUBBED until the hitbox/hurtbox milestone; Brick Toss will
-# become BrickProjectile.tscn (see ROADMAP.md).
 # =============================================================================
 class_name YellowDog
 extends CharacterBase
+
+const BRICK_SCENE := preload("res://scenes/projectiles/BrickProjectile.tscn")
+
+var _brick_ready_ms: int = 0
+var _smoke_ready_ms: int = 0
 
 
 func _init() -> void:
@@ -18,19 +20,46 @@ func _init() -> void:
 	tuning = GameConstants.YELLOW_DOG
 
 
-# Special A: Brick Toss.
+# Special A: Brick Toss — arcs under gravity.
 func special_a() -> void:
-	# TODO(roadmap: projectiles milestone): spawn BrickProjectile.tscn with
-	# damage = tuning["brick_damage"]. Gray-box stub:
-	print("[YELLOW DOG] Brick Toss (stub) — BrickProjectile.tscn not built yet. ",
-			"Brick damage is ", tuning["brick_damage"], " and FLAGGED OP.")
+	var now := Time.get_ticks_msec()
+	if now < _brick_ready_ms:
+		return
+	_brick_ready_ms = now + int(tuning["brick_cooldown_seconds"] * 1000.0)
+	start_cast(GameConstants.SPECIAL_CAST_RECOVERY_FRAMES)
+
+	var brick: BrickProjectile = BRICK_SCENE.instantiate()
+	get_parent().add_child(brick)
+	brick.global_position = global_position + Vector2(facing * 50.0, -60.0)
+	brick.launch(self, facing)
 
 
-# Special B: Smoke Cloud.
+# Special B: Smoke Cloud — a gray cloud drops where Yellow Dog stands and
+# he fades to 35% visibility for the duration.
 func special_b() -> void:
-	# TODO(roadmap: projectiles milestone): smoke cloud that hides Yellow Dog
-	# for tuning["smoke_cloud_duration_seconds"]. Gray-box stub:
-	print("[YELLOW DOG] Smoke Cloud (stub)")
+	var now := Time.get_ticks_msec()
+	if now < _smoke_ready_ms:
+		return
+	_smoke_ready_ms = now + int(tuning["smoke_cloud_cooldown_seconds"] * 1000.0)
+	start_cast(GameConstants.SPECIAL_CAST_RECOVERY_FRAMES)
+	_run_smoke_cloud()
+
+
+func _run_smoke_cloud() -> void:
+	var duration: float = tuning["smoke_cloud_duration_seconds"]
+
+	var cloud := ColorRect.new()
+	cloud.color = Color(0.6, 0.6, 0.65, 0.55)
+	cloud.size = Vector2(220.0, 220.0)
+	cloud.add_to_group("projectiles") # so round resets clear it too
+	get_parent().add_child(cloud)
+	cloud.global_position = global_position - cloud.size * 0.5
+
+	modulate.a = 0.35
+	await get_tree().create_timer(duration).timeout
+	modulate.a = 1.0
+	if is_instance_valid(cloud):
+		cloud.queue_free()
 
 
 # Deadpan Charge uses the universal hold-to-charge entry point.
